@@ -57,12 +57,16 @@
 			</div>
 			<article>
 				<h6 class="response-title">'.$row['title'].'</h6>
-				<div class="body">'.$misc->short_url($misc->swap_bbs_tags($misc->linebreaks($row['post']))).'</div>
-				
-			//HACK: Show edit message only if edit count is not 0.
-			//(count($row['edit_count']) >= 1) ? echo "edited" . $row['edit_time'] . "by" . $row['edited_by'] : "";	
-			
+				<div class="body">'.$misc->short_url($misc->swap_bbs_tags($misc->linebreaks($row['post']))).'</div>			
 			<div class="footer">';
+		
+		//HACK: Show "edited by" text based on edit count (obviously shouldn't occur when edit count is 0)
+		if (count($row['edit_count']) >= 1) 
+		{ 
+			echo '<span class="edit-message">'
+				"edited by" . $row['edited_by'] . "on" . $row['edit_time'];
+			echo '</span>';
+		}
     	
 		($uname == $row['author'] || $user->gotpermission('edit_forum_posts')) ? 
 		echo '<a href="#" onclick="showHide(\'c'.$row['id'].'\'); return false;">edit</a> |' 
@@ -75,6 +79,14 @@
 		{
 			print ' | <a href="index.php?page=forum&amp;s=remove&amp;pid='.$id.'&amp;cid='.$row['id'].'">remove</a><br />';
 		}
+		
+		//Note: Testing a "hide post" function where the post is hidden but not actually deleted (mod only)
+		/*
+			if ($user->gotpermission('delete_forum_posts'))
+			{
+				print ' | <a href="index.php?page=forum&amp;s=hide&amp;pid='.$id.'& amp;cid='.$row['id'].'">hide this post</a>';
+			}
+		*/
 		
 		if($uname == $row['author'] || $user->gotpermission('edit_forum_posts')) 
 		{
@@ -131,7 +143,8 @@
 		}
 	}		
 	
-	if($row['locked'] == false)
+	//Ugh, I hate inline comments, but I'm testing out a ban system which prohibits adding posts to threads if you're forum banned.
+	if($row['locked'] == false /* && $user->is_forum_banned() === false*/)
 	{
 		echo '</center>
 		<br>
