@@ -1,17 +1,24 @@
 <?php
 	$user = new user();
+	
+	//TODO: This should be its own function, checking for a banned IP.
 	$ip = $db->real_escape_string($_SERVER['REMOTE_ADDR']);	
 	if($user->banned_ip($ip))
 	{
+		//Redirect to the page that explains why they're banned (it isn't made yet.)
+		//header(Location: /banned.php);
 		print "Action failed: ".$row['reason'];
 		exit;
 	}	
+	
 	if(!$user->check_log())
 	{
 		header("Location:index.php?page=reg");
 		exit;
 	}
 	$add_forum_count = "UPDATE $user_table SET forum_post_count = forum_post_count+1 WHERE id='$checked_user_id'";	
+	
+	//Replying to an existing thread.
 	if(isset($_GET['t']) && $_GET['t'] == "post")
 	{
 		if(isset($_GET['pid']) && is_numeric($_GET['pid']) && isset($_POST['conf']) && $_POST['conf'] == 1)
@@ -24,11 +31,14 @@
 			$query = "SELECT locked FROM $forum_topic_table WHERE id='$pid'";
 			$result = $db->query($query) or die($db->error);
 			$row = $result->fetch_assoc();
-			if($row['locked'] == true)
+			
+			//We don't want the user posting in a locked thread unless they are a moderator.
+			if($row['locked'] == true && !$user->gotpermission('delete_forum_posts'))
 			{
-				header("HTTP/1.1 404 Not Found");
+				echo "Ahem. You do realize that locked means locked? As in, we don't want anything new added to it?";
 				exit;
 			}
+			
 			$query = "SELECT forum_can_post FROM $user_table WHERE id='$uid'";
 			$result = $db->query($query) or die($db->error);
 			$row = $result->fetch_assoc();
@@ -39,6 +49,8 @@
 				header("HTTP/1.1 404 Not Found");
 				exit;
 			}
+			
+			//TODO: This needs to be replaced with proper safe SQL. As it is it's not very safe.
 			$query = "INSERT INTO $forum_post_table(title, post, author, creation_date, topic_id) VALUES('$title', '$post', '$user', '".mktime()."', '$pid')";
 			$db->query($query) or die($db->error);
 			$query = "SELECT LAST_INSERT_ID() as id FROM $forum_post_table";
@@ -55,15 +67,14 @@
 			$numrows = $row['COUNT(*)'];
 			$result->free_result();
 			$pages = @intval($numrows/$limit);
-			if($numrows%$limit>0) 
-				$pages++;
-			else
-				$pages = 1;
+			($numrows%$limit>0) ? $pages++ : $pages = 1;
 			$ppid = $limit*($pages - 1);
 			header("Location:index.php?page=forum&s=view&id=$pid&pid=$ppid#$id");
 			exit;
 		}	
 	}
+
+	//Making a new thread.
 	else
 	{
 		if(isset($_POST['topic']) && $_POST['topic'] != "" && isset($_POST['post']) && $_POST['post'] != "" && isset($_POST['conf']) && $_POST['conf'] == 1)
@@ -76,8 +87,10 @@
 			$row = $result->fetch_assoc();
 			$user = $checked_username;
 			$can_create_topic = $row['forum_can_create_topic'];
+			
 			if($can_create_topic == false)
 			{
+				//echo "This forum is locked.";
 				header("HTTP/1.1 404 Not Found");
 				exit;
 			}
