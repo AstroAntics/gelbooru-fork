@@ -30,17 +30,61 @@
 			<tr><td>
 			Reason:</td><td><input type="text" name="ban_reason" value="" size="80" /></td></tr>
 			<tr><td></td><td>
-			<input type="submit" value="Add Ban" /></td><tr></table>
+			<tr><td><input type="checkbox" id="forum-ban" name="forum-ban">
+			<label for="forum-ban">Ban the user from the forums as well?</label>
+			<tr><td><textarea id="forum-ban-reason" name="forum-ban-reason"></textarea>
+			<label for="forum-ban-reason">Reason for the forum ban?</label>
+			<input type="checkbox" id="full-ban" name="full-ban">
+			<label for="full-ban"> Fully ban the user? (They will no longer be able to access the site.) </label>
+			<input type="submit" value="Add Ban" /></td>
+			</table>
 			</form>
 			</article></body></html>
 			';
 			exit;
 		}
 		$ban_reason = $db->real_escape_string($_POST['ban_reason']);
+		(isset($_POST['forum-ban'])) ? $do_forum_ban = true : $do_forum_ban = false;
+		(isset($_POST['full-ban'] ? $full_ban = true : $full_ban = false;
+		if (isset($_POST['forum-ban-reason'])
+		{
+			$sanitized_reason = htmlspecialchars($_POST['forum-ban-reason'])
+		}
+		
 		//Let's grab the database values of all three since they are already there.
 		$ban_id = $db->real_escape_string($row['id']);
 		$ban_username = $db->real_escape_string($row['user']);
 		$ban_ip = $db->real_escape_string($row['ip']);
+		    
+		//Full ban (or bounce) goes first and takes priority over everything else.
+		if ($full_ban)
+		{
+			print "Applying full ban.. <br>";
+			flush();
+			//$query = "INSERT INTO $bounce_table (ip, user, date_added, reason) VALUES ('$ban_ip', '$checked_username', '" . time()) . "')";
+			//$db->query($query);
+		}
+		
+		//Forum ban goes second since it's optional, and we won't do it if the user skips putting it in.
+		//(We don't actually have the query or the table yet.)
+		if ($do_forum_ban)
+		{
+			if (!$sanitized_reason) 
+			{
+				print "Now attempting to forum ban the user... <br>";
+				flush();
+				//$query = "INSERT INTO $forum_ban_table(ip, user, date_added, reason) VALUES ('$ban_ip', '$checked_username', '" . time()) . ", '')";
+				//$db->query($query);
+			}
+			
+			else
+			{
+				print "Now attempting to forum ban the user... <br>";
+				flush();
+				//$query = "INSERT INTO $forum_ban_table(ip, user, date_added, reason) VALUES ('$ban_ip', '$checked_username', '" . time()) . "')", '$sanitized_reason'";
+				//$db->query($query);
+			}
+		}
 
 		//These queries could be done with a single join, but why bother making it complicated? 
 		//Multiple simple queries shouldn't be that bad on the server... Right?
