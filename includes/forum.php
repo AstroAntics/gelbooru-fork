@@ -1,19 +1,39 @@
 <?php
 	$s = $_GET['s'];
-	if($s == "list")
+
+	switch ($s)
+	{
+		case "list":
 		require "forum/forum_list.php";
-	else if($s == "view")
+		break;
+		
+		case "view":
 		require "forum/forum_view.php";
-	else if($s == "remove")
+		break;
+			
+		case "remove":
 		require "forum/forum_remove.php";
-	else if($s == "edit")
+		break;
+			
+		case "edit":
 		require "forum/forum_edit.php";
-	else if($s == "add")
+		break;
+			
+		case "add":
 		require "forum/forum_add.php";
-	else if($s == "search")
+		break;
+			
+		case "search":
 		require "forum/forum_search.php";
-	else if($s == "post")
+		break;
+			
+			
+		case "post":
 		require "forum/forum_post.php";
-	else
-		header("Location:index.php");
+		break;
+			
+		default:
+		header("Location: index.php");
+		break;
+	}
 ?>
