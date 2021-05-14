@@ -58,6 +58,10 @@
 			<article>
 				<h6 class="response-title">'.$row['title'].'</h6>
 				<div class="body">'.$misc->short_url($misc->swap_bbs_tags($misc->linebreaks($row['post']))).'</div>
+				
+			//HACK: Show edit message only if edit count is not 0.
+			//(count($row['edit_count']) >= 1) ? echo "edited" . $row['edit_time'] . "by" . $row['edited_by'] : "";	
+			
 			<div class="footer">';
     	
 		($uname == $row['author'] || $user->gotpermission('edit_forum_posts')) ? 
