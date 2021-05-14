@@ -13,22 +13,27 @@
 			header("Location:index.php?page=forum&s=list");
 			exit;
 		}
-		$i = 0;
+		$postcount = 0;
 		$query = "SELECT id FROM $forum_post_table WHERE topic_id='$fid'";
 		$result = $db->query($query) or die($db->error);
+		
 		while($row = $result->fetch_assoc())
 		{
-			$i++;
-			if($row['id'] == $id)
+			$postcount++;
+			
+			if($row['id'] == $id) 
+			{
 				break;
+			}
 		}
+		
 		$result->free_result();
-		$j = 1;
-		while(($j*$limit)<$i)
+		$threadcount = 1;
+		while(($threadcount*$limit)<$postcount)
 		{
-			$j++;
+			$threadcount++;
 		}
-		$pid = $limit*($j - 1);
+		$pid = $limit*($threadcount - 1);
 		header("Location:index.php?page=forum&s=view&id=$fid&pid=$pid#$id");
 	}
 ?>
