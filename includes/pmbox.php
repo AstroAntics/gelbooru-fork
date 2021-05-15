@@ -26,6 +26,9 @@ if ($num_msg === 0)
         echo '<span class="block center boldish"> You have no private messages. </span>';
 }
 
+//Have to concatenate the title because PHP hates apostrophes in expressions. Blah :/
+echo '<span class="bigtext center-line">' . $username . "'s Messages" .'</span>';
+
 //Show the PM options to the user.
 echo '<div class="btn-medium force-left no-shadow">Compose PM</div>';
 echo '<div class="btn-medium force-right no-shadow">Find PM blocks</div>';
