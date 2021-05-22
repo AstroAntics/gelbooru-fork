@@ -18,6 +18,19 @@
 		$uname = $checked_username;
 		$uid = checked_user_id;
 	}
+
+	/* The nuked thread check goes before everything else. 
+	We try to select a row from the nuked threads table where the topic ids match. */
+	$query = "SELECT FROM $nuked_thread_table WHERE topic_id='$id'"; 
+	$result = $db->query($query);
+	$row = $result->fetch_assoc();
+	$result->free_result();
+	
+	if ($row['topic_id'] === $id)
+	{
+		header("Location: /nuked-thread.php?id= . $row['topic-id'] . ");
+	}
+	
 	
 	$query = "SELECT COUNT(*) FROM $forum_post_table WHERE topic_id='$id'";
 	$result = $db->query($query);
