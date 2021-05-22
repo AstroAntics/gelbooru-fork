@@ -25,6 +25,10 @@
 			{
 				$query = "DELETE FROM $forum_post_table WHERE id='$cid'";
 				$db->query($query);
+				/*
+				$query = "INSERT INTO $nuked_thread_table (id, thread_id, date_nuked, reason) VALUES '', '$thread_id', 'NOW()', $reason";
+				$db->query($query);
+				*/
 			}	
 		}
 		echo "This topic has been successfully nuked.";
@@ -42,6 +46,10 @@
 			$db->query($query) or die($db->error);
 			$query = "DELETE FROM $forum_topic_table WHERE id='$fid'";
 			$db->query($query) or die($db->error);
+			//$query = "INSERT INTO $nuked_thread_table (id, thread_id, date_nuked, reason) VALUES '', '$thread_id', 'NOW()', '$reason'";
+			//$db->query($query) or die($db->error);
+			
+			
 			header("Location:index.php?page=forum&s=list&pid=$pid");
 			exit;
 		}
